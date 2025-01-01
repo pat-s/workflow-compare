@@ -1,0 +1,18 @@
+name: R-container
+on:
+  push:
+    branches: [main]
+
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    container: docker.io/devxygmbh/r-alpine:4.4-3.21
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+
+      - name: Execute R commands
+        run: |
+          R -q -e 'install.packages("pak", repos = sprintf("https://r-lib.github.io/p/pak/devel/%s/%s/%s", .Platform$pkgType, R.Version()$os, R.Version()$arch))'
+          R -q -e 'getOption("repos")'
+          R -q -e 'options(Ncpus = 2); pak::local_install_dev_deps()'
